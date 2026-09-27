@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>In Other Words — Translator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --color-bg: #EEF1F5;
+    --color-panel: #FFFFFF;
+    --color-panel-alt: #F4F2FB;
+    --color-ink: #1B2740;
+    --color-ink-soft: #5B6B85;
+    --color-border: #D7DCE3;
+    --color-accent: #B97A1E;
+    --color-accent-strong: #8A5A12;
+    --color-accent-contrast: #FFFFFF;
+    --color-danger: #A8402C;
+    --color-glyph: #1B2740;
+
+    --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --color-bg: #121826;
+      --color-panel: #1B2438;
+      --color-panel-alt: #212A42;
+      --color-ink: #E7EAF0;
+      --color-ink-soft: #A7B0C6;
+      --color-border: #2E3A57;
+      --color-accent: #E0A94D;
+      --color-accent-strong: #F0C078;
+      --color-accent-contrast: #17120A;
+      --color-danger: #E2685A;
+      --color-glyph: #E7EAF0;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --color-bg: #121826;
+    --color-panel: #1B2438;
+    --color-panel-alt: #212A42;
+    --color-ink: #E7EAF0;
+    --color-ink-soft: #A7B0C6;
+    --color-border: #2E3A57;
+    --color-accent: #E0A94D;
+    --color-accent-strong: #F0C078;
+    --color-accent-contrast: #17120A;
+    --color-danger: #E2685A;
+    --color-glyph: #E7EAF0;
+  }
+
+  *, *::before, *::after { box-sizing: inherit; }
+
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 3rem;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 2.5rem 1rem 3rem;
+    overflow: hidden;
+  }
+
+  .hero-glyphs {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    font-family: var(--font-display);
+    color: var(--color-glyph);
+  }
+
+  .hero-glyphs span {
+    position: absolute;
+    opacity: 0.09;
+    white-space: nowrap;
+  }
+
+  .hero-glyphs .g1 { top: 4%;  left: 2%;  font-size: 1.6rem; transform: rotate(-8deg); }
+  .hero-glyphs .g2 { top: 62%; left: 4%;  font-size: 1.3rem; transform: rotate(6deg); }
+  .hero-glyphs .g3 { top: 12%; right: 3%; font-size: 1.8rem; transform: rotate(5deg); }
+  .hero-glyphs .g4 { top: 68%; right: 6%; font-size: 1.4rem; transform: rotate(-6deg); }
+  .hero-glyphs .g5 { top: 40%; left: 12%; font-size: 1.1rem; transform: rotate(-3deg); }
+  .hero-glyphs .g6 { top: 44%; right: 14%; font-size: 1.15rem; transform: rotate(4deg); }
+  .hero-glyphs .g7 { top: 2%;  left: 38%; font-size: 1.2rem; transform: rotate(2deg); }
+  .hero-glyphs .g8 { top: 76%; left: 40%; font-size: 1.5rem; transform: rotate(-4deg); }
+
+  .hero h1 {
+    position: relative;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.01em;
+  }
+
+  .hero p {
+    position: relative;
+    margin: 0;
+    color: var(--color-ink-soft);
+    font-size: 1.05rem;
+  }
+
+  /* ---------- Card ---------- */
+
+  .card {
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .lang-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
+  }
+
+  .lang-field {
+    flex: 1 1 180px;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .lang-field label {
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+  }
+
+  select {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-ink);
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 0.55rem 0.65rem;
+    width: 100%;
+  }
+
+  .swap-btn {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-panel);
+    color: var(--color-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-bottom: 1px;
+  }
+
+  .swap-btn:hover { border-color: var(--color-accent); color: var(--color-accent-strong); }
+
+  .status-note {
+    padding: 0.75rem 1.25rem 0;
+    font-size: 0.88rem;
+    color: var(--color-ink-soft);
+  }
+
+  .status-note.is-error { color: var(--color-danger); }
+  .status-note[hidden] { display: none; }
+
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+  }
+
+  .divider { background: var(--color-border); }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+  }
+
+  .panel textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 1.02rem;
+    line-height: 1.6;
+    padding: 1.1rem 1.25rem 0.5rem;
+  }
+
+  .panel .output-text {
+    flex: 1;
+    padding: 1.1rem 1.25rem 0.5rem;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .panel .output-text.is-empty { color: var(--color-ink-soft); }
+
+  .panel:nth-child(3) { background: var(--color-panel-alt); }
+
+  .panel-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1.1rem 0.9rem;
+    gap: 0.5rem;
+  }
+
+  .char-count { font-size: 0.78rem; color: var(--color-ink-soft); }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-ink-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .icon-btn:hover:not(:disabled) { color: var(--color-ink); border-color: var(--color-border); }
+  .icon-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .panel-actions { display: flex; gap: 0.35rem; margin-left: auto; }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .quota-note {
+    padding: 0 1.25rem 1.1rem;
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--color-ink-soft);
+  }
+
+  .clear-link {
+    background: none;
+    border: none;
+    color: var(--color-ink-soft);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.4rem 0.2rem;
+  }
+
+  .clear-link:hover { color: var(--color-ink); }
+
+  .translate-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.98rem;
+    padding: 0.7rem 1.4rem;
+    cursor: pointer;
+  }
+
+  .translate-btn:hover:not(:disabled) { background: var(--color-accent-strong); }
+  .translate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .spinner {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .spinner { animation: spin 0.8s linear infinite; }
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  @media (max-width: 680px) {
+    .panels { grid-template-columns: 1fr; }
+    .divider { height: 1px; width: 100%; }
+    .panel:nth-child(3) { border-top: 1px solid var(--color-border); }
+    .lang-bar { align-items: center; }
+    .swap-btn { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-glyphs" aria-hidden="true">
+      <span class="g1">Hola</span>
+      <span class="g2">你好</span>
+      <span class="g3">Bonjour</span>
+      <span class="g4">こんにちは</span>
+      <span class="g5">مرحبا</span>
+      <span class="g6">Здравствуйте</span>
+      <span class="g7">नमस्ते</span>
+      <span class="g8">안녕하세요</span>
+    </div>
+    <h1>In Other Words</h1>
+    <p>Type it once, say it in any language.</p>
+  </div>
+
+  <div class="card">
+    <div class="lang-bar">
+      <div class="lang-field">
+        <label for="sourceLang">From</label>
+        <select id="sourceLang"></select>
+      </div>
+
+      <button class="swap-btn" id="swapBtn" type="button" aria-label="Swap languages">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7h11m0 0-3-3m3 3-3 3"/>
+          <path d="M17 13H6m0 0 3 3m-3-3 3-3"/>
+        </svg>
+      </button>
+
+      <div class="lang-field">
+        <label for="targetLang">To</label>
+        <select id="targetLang"></select>
+      </div>
+    </div>
+
+    <p class="status-note" id="statusNote" role="status" hidden></p>
+
+    <div class="panels">
+      <div class="panel">
+        <textarea id="inputText" maxlength="2000" placeholder="Type or paste the text you want translated…"></textarea>
+        <div class="panel-footer">
+          <span class="char-count"><span id="charCount">0</span> / 2000</span>
+          <div class="panel-actions">
+            <button class="icon-btn" id="speakInputBtn" type="button" aria-label="Listen to the original text" disabled>
+              <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8v4h3l4 3V5L6 8H3z"/>
+                <path d="M13.3 7.6a3.4 3.4 0 0 1 0 4.8"/>
+                <path d="M15.6 5.3a7 7 0 0 1 0 9.4"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="panel">
+        <div class="output-text is-empty" id="outputText" aria-live="polite">Your translation will appear here.</div>
+        <div class="panel-footer">
+          <span></span>
+          <div class="panel-actions">
+            <button class="icon-btn" id="speakOutputBtn" type="button" aria-label="Listen to the translation" disabled>
+              <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8v4h3l4 3V5L6 8H3z"/>
+                <path d="M13.3 7.6a3.4 3.4 0 0 1 0 4.8"/>
+                <path d="M15.6 5.3a7 7 0 0 1 0 9.4"/>
+              </svg>
+            </button>
+            <button class="icon-btn" id="copyBtn" type="button" aria-label="Copy translation" disabled>
+              <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="7" y="7" width="9" height="9" rx="1.5"/>
+                <path d="M13 7V4.5A1.5 1.5 0 0 0 11.5 3h-7A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13H7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="clear-link" id="clearBtn" type="button">Clear</button>
+      <button class="translate-btn" id="translateBtn" type="button">
+        <span id="translateBtnLabel">Translate</span>
+      </button>
+    </div>
+    <p class="quota-note">Powered by the free MyMemory API — about 5,000 characters/day per connection (no key required).</p>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Optional: add your own email to raise MyMemory's free daily limit
+  // from 5,000 characters/day to 50,000 characters/day. No signup needed —
+  // see https://mymemory.translated.net/doc/spec.php
+  var CONTACT_EMAIL = '';
+
+  var MAX_BYTES_PER_REQUEST = 450; // MyMemory caps each "q" at 500 bytes; stay under that
+
+  var LANGUAGES = [
+    { code: 'en', name: 'English', speech: 'en-US' },
+    { code: 'es', name: 'Spanish', speech: 'es-ES' },
+    { code: 'fr', name: 'French', speech: 'fr-FR' },
+    { code: 'de', name: 'German', speech: 'de-DE' },
+    { code: 'it', name: 'Italian', speech: 'it-IT' },
+    { code: 'pt', name: 'Portuguese', speech: 'pt-PT' },
+    { code: 'nl', name: 'Dutch', speech: 'nl-NL' },
+    { code: 'ru', name: 'Russian', speech: 'ru-RU' },
+    { code: 'pl', name: 'Polish', speech: 'pl-PL' },
+    { code: 'tr', name: 'Turkish', speech: 'tr-TR' },
+    { code: 'el', name: 'Greek', speech: 'el-GR' },
+    { code: 'sv', name: 'Swedish', speech: 'sv-SE' },
+    { code: 'da', name: 'Danish', speech: 'da-DK' },
+    { code: 'no', name: 'Norwegian', speech: 'nb-NO' },
+    { code: 'fi', name: 'Finnish', speech: 'fi-FI' },
+    { code: 'cs', name: 'Czech', speech: 'cs-CZ' },
+    { code: 'ro', name: 'Romanian', speech: 'ro-RO' },
+    { code: 'hu', name: 'Hungarian', speech: 'hu-HU' },
+    { code: 'uk', name: 'Ukrainian', speech: 'uk-UA' },
+    { code: 'he', name: 'Hebrew', speech: 'he-IL' },
+    { code: 'ar', name: 'Arabic', speech: 'ar-SA' },
+    { code: 'hi', name: 'Hindi', speech: 'hi-IN' },
+    { code: 'bn', name: 'Bengali', speech: 'bn-BD' },
+    { code: 'ur', name: 'Urdu', speech: 'ur-PK' },
+    { code: 'fa', name: 'Persian', speech: 'fa-IR' },
+    { code: 'th', name: 'Thai', speech: 'th-TH' },
+    { code: 'vi', name: 'Vietnamese', speech: 'vi-VN' },
+    { code: 'id', name: 'Indonesian', speech: 'id-ID' },
+    { code: 'ms', name: 'Malay', speech: 'ms-MY' },
+    { code: 'zh-CN', name: 'Chinese (Simplified)', speech: 'zh-CN' },
+    { code: 'zh-TW', name: 'Chinese (Traditional)', speech: 'zh-TW' },
+    { code: 'ja', name: 'Japanese', speech: 'ja-JP' },
+    { code: 'ko', name: 'Korean', speech: 'ko-KR' },
+    { code: 'sw', name: 'Swahili', speech: 'sw-KE' },
+    { code: 'tl', name: 'Filipino', speech: 'fil-PH' }
+  ];
+
+  var EMPTY_OUTPUT = 'Your translation will appear here.';
+
+  var els = {
+    sourceLang: document.getElementById('sourceLang'),
+    targetLang: document.getElementById('targetLang'),
+    swapBtn: document.getElementById('swapBtn'),
+    inputText: document.getElementById('inputText'),
+    outputText: document.getElementById('outputText'),
+    charCount: document.getElementById('charCount'),
+    translateBtn: document.getElementById('translateBtn'),
+    translateBtnLabel: document.getElementById('translateBtnLabel'),
+    copyBtn: document.getElementById('copyBtn'),
+    speakInputBtn: document.getElementById('speakInputBtn'),
+    speakOutputBtn: document.getElementById('speakOutputBtn'),
+    clearBtn: document.getElementById('clearBtn'),
+    statusNote: document.getElementById('statusNote')
+  };
+
+  var state = {
+    translating: false,
+    controller: null
+  };
+
+  function langByCode(code) {
+    for (var i = 0; i < LANGUAGES.length; i++) {
+      if (LANGUAGES[i].code === code) return LANGUAGES[i];
+    }
+    return null;
+  }
+
+  function populateSelects() {
+    var optionsHtml = '';
+    LANGUAGES.forEach(function (lang) {
+      optionsHtml += '<option value="' + lang.code + '">' + lang.name + '</option>';
+    });
+    els.sourceLang.innerHTML = optionsHtml;
+    els.targetLang.innerHTML = optionsHtml;
+    els.sourceLang.value = 'en';
+    els.targetLang.value = 'es';
+  }
+
+  function updateCharCount() {
+    els.charCount.textContent = String(els.inputText.value.length);
+  }
+
+  function setOutput(text) {
+    if (text) {
+      els.outputText.textContent = text;
+      els.outputText.classList.remove('is-empty');
+      els.copyBtn.disabled = false;
+      els.speakOutputBtn.disabled = false;
+    } else {
+      els.outputText.textContent = EMPTY_OUTPUT;
+      els.outputText.classList.add('is-empty');
+      els.copyBtn.disabled = true;
+      els.speakOutputBtn.disabled = true;
+    }
+  }
+
+  function getOutputText() {
+    return els.outputText.classList.contains('is-empty') ? '' : els.outputText.textContent;
+  }
+
+  function showStatus(message, isError) {
+    if (!message) {
+      els.statusNote.hidden = true;
+      els.statusNote.textContent = '';
+      return;
+    }
+    els.statusNote.hidden = false;
+    els.statusNote.textContent = message;
+    els.statusNote.classList.toggle('is-error', !!isError);
+  }
+
+  function setTranslating(isTranslating) {
+    state.translating = isTranslating;
+    els.translateBtnLabel.innerHTML = isTranslating
+      ? '<span class="spinner" aria-hidden="true"></span> Stop'
+      : 'Translate';
+  }
+
+  // ---------- MyMemory API ----------
+
+  function utf8ByteLength(str) {
+    return new TextEncoder().encode(str).length;
+  }
+
+  function chunkText(text, maxBytes) {
+    if (utf8ByteLength(text) <= maxBytes) return [text];
+    var tokens = text.split(/(\s+)/).filter(function (t) { return t.length > 0; });
+    var chunks = [];
+    var current = '';
+    tokens.forEach(function (token) {
+      if (utf8ByteLength(current + token) <= maxBytes) {
+        current += token;
+        return;
+      }
+      if (current) chunks.push(current);
+      if (utf8ByteLength(token) <= maxBytes) {
+        current = token;
+        return;
+      }
+      var sub = '';
+      for (var ch of token) {
+        if (utf8ByteLength(sub + ch) <= maxBytes) {
+          sub += ch;
+        } else {
+          if (sub) chunks.push(sub);
+          sub = ch;
+        }
+      }
+      current = sub;
+    });
+    if (current) chunks.push(current);
+    return chunks;
+  }
+
+  function buildApiUrl(text, sourceCode, targetCode) {
+    var params = new URLSearchParams();
+    params.set('q', text);
+    params.set('langpair', sourceCode + '|' + targetCode);
+    if (CONTACT_EMAIL) params.set('de', CONTACT_EMAIL);
+    return 'https://api.mymemory.translated.net/get?' + params.toString();
+  }
+
+  function translateChunk(text, sourceCode, targetCode, signal) {
+    var url = buildApiUrl(text, sourceCode, targetCode);
+    return fetch(url, { signal: signal }).then(function (res) {
+      if (!res.ok) throw { kind: 'network' };
+      return res.json();
+    }).then(function (data) {
+      if (!data || !data.responseData || typeof data.responseData.translatedText !== 'string') {
+        throw { kind: 'bad-response' };
+      }
+      var translated = data.responseData.translatedText;
+      var upper = translated.toUpperCase();
+      if (data.responseStatus && data.responseStatus !== 200) {
+        throw { kind: 'quota' };
+      }
+      if (upper.indexOf('MYMEMORY WARNING') !== -1 || upper.indexOf('QUERY LENGTH LIMIT') !== -1) {
+        throw { kind: 'quota' };
+      }
+      return translated;
+    });
+  }
+
+  function messageForError(err) {
+    if (err && err.kind === 'quota') {
+      return "Daily free-translation limit reached for this connection. Try again tomorrow, or add an email in the script's CONTACT_EMAIL setting to raise the limit.";
+    }
+    if (err && err.kind === 'network') {
+      return "Couldn't reach the translation service — check your connection and try again.";
+    }
+    return 'Translation failed — try again.';
+  }
+
+  function runTranslate() {
+    if (state.translating) {
+      if (state.controller) state.controller.abort();
+      return;
+    }
+    var text = els.inputText.value.trim();
+    if (!text) return;
+
+    var sourceCode = els.sourceLang.value;
+    var targetCode = els.targetLang.value;
+    if (sourceCode === targetCode) {
+      showStatus('Pick two different languages to translate between.', true);
+      return;
+    }
+
+    showStatus(null);
+    setOutput('');
+    setTranslating(true);
+
+    var controller = new AbortController();
+    state.controller = controller;
+
+    var chunks = chunkText(text, MAX_BYTES_PER_REQUEST);
+    var resultParts = [];
+    var index = 0;
+
+    function next() {
+      if (index >= chunks.length) {
+        setTranslating(false);
+        state.controller = null;
+        return;
+      }
+      translateChunk(chunks[index], sourceCode, targetCode, controller.signal)
+        .then(function (translated) {
+          resultParts.push(translated);
+          setOutput(resultParts.join(''));
+          index++;
+          next();
+        })
+        .catch(function (err) {
+          setTranslating(false);
+          state.controller = null;
+          if (err && err.name === 'AbortError') return;
+          if (resultParts.length) setOutput(resultParts.join(''));
+          showStatus(messageForError(err), true);
+        });
+    }
+    next();
+  }
+
+  function speak(text, code) {
+    if (!('speechSynthesis' in window) || !text) return;
+    var lang = langByCode(code);
+    var utter = new SpeechSynthesisUtterance(text);
+    if (lang) utter.lang = lang.speech;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  }
+
+  function copyOutput() {
+    var text = getOutputText();
+    if (!text || !navigator.clipboard) return;
+    navigator.clipboard.writeText(text).then(function () {
+      var original = els.copyBtn.innerHTML;
+      els.copyBtn.innerHTML = '<svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 5.5"/></svg>';
+      setTimeout(function () { els.copyBtn.innerHTML = original; }, 1400);
+    }).catch(function () {
+      showStatus("Couldn't copy — select the text manually.", true);
+    });
+  }
+
+  function clearAll() {
+    els.inputText.value = '';
+    updateCharCount();
+    setOutput('');
+    showStatus(null);
+    els.inputText.focus();
+  }
+
+  // Wire up events
+  els.inputText.addEventListener('input', function () {
+    updateCharCount();
+    els.speakInputBtn.disabled = !els.inputText.value.trim();
+  });
+  els.swapBtn.addEventListener('click', function () {
+    var oldSource = els.sourceLang.value;
+    var oldTarget = els.targetLang.value;
+    els.sourceLang.value = oldTarget;
+    els.targetLang.value = oldSource;
+    var currentOutput = getOutputText();
+    if (currentOutput) els.inputText.value = currentOutput;
+    updateCharCount();
+    setOutput('');
+    showStatus(null);
+  });
+  els.translateBtn.addEventListener('click', runTranslate);
+  els.copyBtn.addEventListener('click', copyOutput);
+  els.speakInputBtn.addEventListener('click', function () {
+    speak(els.inputText.value.trim(), els.sourceLang.value);
+  });
+  els.speakOutputBtn.addEventListener('click', function () {
+    speak(getOutputText(), els.targetLang.value);
+  });
+  els.clearBtn.addEventListener('click', clearAll);
+
+  // Init
+  populateSelects();
+  updateCharCount();
+  els.speakInputBtn.disabled = true;
+})();
+</script>
+</body>
+</html>
